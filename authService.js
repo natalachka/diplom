@@ -1,7 +1,5 @@
 (function(){
     window.AuthService = function AuthService(storage){
-        var currentUser = null;
-
         this.register = function(email, pass){
             var newUser = {email: email, pass: pass};
             registeredUsers = storage.registeredUsers;
@@ -16,20 +14,20 @@
                 } else {
                     registeredUsers.push(newUser);
                     storage.set('registeredUsers', registeredUsers);
-                    currentUser =  newUser;
-                    return currentUser;
+                    storage.set('currentUser', newUser);
+                    return true;
                 }
             } else {
                 registeredUsers = [];
                 registeredUsers.push(newUser);
                 storage.set('registeredUsers', registeredUsers);
-                currentUser =  newUser;
-                return currentUser;
+                storage.set('currentUser', newUser);
+                return true;
             }
         };
 
         this.login = function(email, pass){
-            registeredUsers = storage.registeredUsers;
+            registeredUsers = storage.get('registeredUsers') || [];
 
             var index = registeredUsers.findIndex(function(user){
                 return user.email === email;
@@ -43,18 +41,18 @@
                 if(pass !== user.pass){
                     return false;
                 } else {
-                    currentUser = user;
+                    storage.set('currentUser', user);
                     return true;
                 }
             }
         }
 
         this.logout = function(){
-            currentUser = null;
-        }
+            storage.set('currentUser', null);
+        };
 
         this.getCurrentUser = function(){
-            return currentUser;
+            return  storage.get('currentUser');
         }
     }
 })();   

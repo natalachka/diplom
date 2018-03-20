@@ -21,14 +21,28 @@
 	var taskList = document.getElementById('myUl');
 	var login = document.getElementById('login');
 
+	if(authService.getCurrentUser()){
+        showApp();
+	}
 
     myBtn.addEventListener('click', showModal);
     close.addEventListener('click', function(){
         hideModal();
         hideErrors();
     });
-
     enter.addEventListener('click', onSignInClick);
+    create.addEventListener('click', registerUser);
+    secondBtn.addEventListener('click', logOut);
+
+    function logOut(){
+    	authService.logout();
+        clearTasks();
+        hideApp();
+	}
+
+	function clearTasks(){
+        taskList.innerHTML = '';
+	}
 
 	function showModal(){
         myModal.style.display = 'flex';
@@ -36,15 +50,32 @@
 
     function hideModal(){
         myModal.style.display = 'none';
+        email.value = '';
+        password.value = '';
+    }
+
+    function showApp(){
+        secondBtn.style.display='block';
+        container.style.display='block';
+        myBtn.style.display = 'none';
+        // loadUserTasks();
+    }
+
+	function hideApp(){
+        secondBtn.style.display='none';
+        container.style.display='none';
+        myBtn.style.display = 'block';
     }
 
     function hideErrors(){
+		error.innerText = '';
         error.style.display='none';
         email.style.border = '';
         password.style.border = '';
     }
 
 	function onSignInClick(){
+        hideErrors();
 		var mail = email.value,
 			pass = password.value;
 		if(!mail) {
@@ -53,13 +84,15 @@
 		} else if (!pass) {
 			password.style.border = "2px solid red";
 			return;
-		}else if(!mail.match(/[^A-Za-z0-9\-\_\$\^\|]+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})/) || pass.length <= 6){
-			error.style.display='block';
+		}else if(!mail.match(/[a-z0-9]+\@[a-z]+\.[a-z]+/i) || pass.length <= 6){
+            error.innerText = 'Wrong login or pass';
+            error.style.display='block';
 			return;
 		} else {
 			if(authService.login(mail, pass)){
 				hideModal();
-			} else {
+                showApp();
+            } else {
                 error.innerText = 'Email is not registered';
                 error.style.display = 'block';
                 create.style.display='block';
@@ -67,46 +100,29 @@
         }
 	}
 
-	secondBtn.addEventListener('click', function(){
-		secondBtn.style.display='none';
-		myBtn.style.display='block';
-		container.style.display='none';
-		content.style.display='block';
-		email.value = '';
-		password.value = '';
-		var nameUser = '';
-			localStorage.set("currentUserEmail", nameUser);
-
-		exit();
-	});
-	
-	function createAccount (){
-		create.addEventListener('click', function(){
-			var nameUser = mail;
-			localStorage.set("currentUserEmail", nameUser);
-		})
-		
-
-		myModal.style.display = 'none';
-		content.style.display='none';
-		myBtn.style.display='none';
-		secondBtn.style.display='block';
-		container.style.display='block';
-		error.style.display='none';
-		create.style.display='none';
-		addList();
-	}
-
-	function createNote (){
-		var nameUser = email.value;
-		localStorage.set("currentUserEmail", nameUser);
-
-		myModal.style.display = 'none';
-		content.style.display='none';
-		myBtn.style.display='none';
-		secondBtn.style.display='block';
-		container.style.display='block';
-		
+	function registerUser(){
+        hideErrors();
+        var mail = email.value,
+            pass = password.value;
+        if(!mail) {
+            email.style.border = "2px solid red";
+            return;
+        } else if (!pass) {
+            password.style.border = "2px solid red";
+            return;
+        }else if(!mail.match(/[a-z0-9]+\@[a-z]+\.[a-z]+/i) || pass.length <= 6){
+            error.innerText = 'Wrong login or pass';
+            error.style.display='block';
+            return;
+        } else {
+        	if(authService.register(mail, pass)){
+        		hideModal();
+                showApp();
+            } else {
+                error.innerText = 'Email already registered';
+                error.style.display='block';
+            }
+		}
 	}
 
     taskList.addEventListener('click', function(event){
@@ -136,6 +152,7 @@
             span.setAttribute('data-action', 'remove');
             li.appendChild(span);
             taskList.appendChild(li);
+            taskTextInput.value = '';
         }
 	});
 })();
