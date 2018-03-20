@@ -1,12 +1,8 @@
 (function(){
 	'use srtict';
 
-	// var localStorage = new LocalStorage('nick');
-
-	// localStorage.set('currentUserEmail', 'asdasd@mail.ru');
-	// console.log(currentUserEmail);
 	var localStorage = new LocalStorage('asdasdasdasd');
-		localStorage.set('currentUserEmail', 'hhhil');
+	var authService = new AuthService(localStorage);
 
 	var myBtn = document.getElementById('myBtn');
 	var myModal = document.getElementById('myModal');
@@ -23,91 +19,53 @@
 	var newOut = document.getElementById('out');
 	var taskTextInput = document.getElementById('work');
 	var taskList = document.getElementById('myUl');
-
 	var login = document.getElementById('login');
-	// content.addEventListener('click', function(event){
-	// 	var target = event.target;
 
-	// 	if(target.id === 'myBtn') {
-	// 		myModal.style.display = 'flex';
-	// 	}
-	// 	if (target.id === 'close') {
-	// 		myModal.style.display = 'none';
-	// 		error.style.display='none';
-	// 	}
-	// 	if (target.id === 'enter') {
-			
-	// 			var mail = email.value;
-	// 			// var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
-	// 			if(!email.value) {
-	// 				email.style.border = "2px solid red";
-	// 				return false;
-	// 			}
-	// 			if(!password.value) {
-	// 				password.style.border = "2px solid red";
-	// 				return false;
-	// 			}
-	// 			if(mail.match(/[^A-Za-z0-9\-\_\$\^\|]+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})/) || password.value.length <= 6){
-	// 				error.style.display='block';
-	// 				create.style.display='block';
-	// 				return false;
-	// 					if(!email.value && password.value.length > 7) {
-	// 					createAccount();
-	// 				}
-	// 			}
-			
 
-	// 		alert('hello');
-	// 		createNote();
-			
-	// 	}
-	// })
+    myBtn.addEventListener('click', showModal);
+    close.addEventListener('click', function(){
+        hideModal();
+        hideErrors();
+    });
 
-	function comeIn(){
-		myBtn.addEventListener('click', function(){
-		myModal.style.display = 'flex';
-		});
+    enter.addEventListener('click', onSignInClick);
+
+	function showModal(){
+        myModal.style.display = 'flex';
+    }
+
+    function hideModal(){
+        myModal.style.display = 'none';
+    }
+
+    function hideErrors(){
+        error.style.display='none';
+        email.style.border = '';
+        password.style.border = '';
+    }
+
+	function onSignInClick(){
+		var mail = email.value,
+			pass = password.value;
+		if(!mail) {
+			email.style.border = "2px solid red";
+			return;
+		} else if (!pass) {
+			password.style.border = "2px solid red";
+			return;
+		}else if(!mail.match(/[^A-Za-z0-9\-\_\$\^\|]+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})/) || pass.length <= 6){
+			error.style.display='block';
+			return;
+		} else {
+			if(authService.login(mail, pass)){
+				hideModal();
+			} else {
+                error.innerText = 'Email is not registered';
+                error.style.display = 'block';
+                create.style.display='block';
+            }
+        }
 	}
-
-	comeIn();
-
-	function exit(){
-		close.addEventListener('click', function(){
-		myModal.style.display = 'none';
-		error.style.display='none';
-		});
-	}
-
-	exit();
-
-	function form(){
-			enter.addEventListener('click', function (){
-			var mail = email.value;
-			// var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
-			if(!email.value) {
-				email.style.border = "2px solid red";
-				return false;
-			}
-			if(!password.value) {
-				password.style.border = "2px solid red";
-				return false;
-			}
-			if(mail.match(/[^A-Za-z0-9\-\_\$\^\|]+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})/) || password.value.length <= 6){
-				error.style.display='block';
-				create.style.display='block';
-				return false;
-					if(!email.value && password.value.length > 7) {
-					createAccount();
-				}
-			}
-			
-
-			alert('hello');
-			createNote();
-		})
-	}
-	
-	form();		
 
 	secondBtn.addEventListener('click', function(){
 		secondBtn.style.display='none';
@@ -118,10 +76,8 @@
 		password.value = '';
 		var nameUser = '';
 			localStorage.set("currentUserEmail", nameUser);
-		
-		comeIn();
+
 		exit();
-		form();
 	});
 	
 	function createAccount (){
