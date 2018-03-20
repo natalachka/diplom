@@ -5,7 +5,7 @@
 
 	// localStorage.set('currentUserEmail', 'asdasd@mail.ru');
 	// console.log(currentUserEmail);
-	var localStorage = new LocalStorage('user');
+	var localStorage = new LocalStorage('asdasdasdasd');
 		localStorage.set('currentUserEmail', 'hhhil');
 
 	var myBtn = document.getElementById('myBtn');
@@ -19,8 +19,10 @@
 	var secondBtn = document.getElementById('secondBtn');
 	var container = document.getElementById('container');
 	var create = document.getElementById('create');
-	var add = document.getElementById('add');
+	var createTaskButton = document.getElementById('add');
 	var newOut = document.getElementById('out');
+	var taskTextInput = document.getElementById('work');
+	var taskList = document.getElementById('myUl');
 
 	var login = document.getElementById('login');
 	// content.addEventListener('click', function(event){
@@ -150,47 +152,34 @@
 		container.style.display='block';
 		
 	}
-	
-	add.addEventListener('click', function(){
 
-		var li = document.createElement('li');
-		var inputValue = document.getElementById('work').value;
-		var t = document.createTextNode(inputValue);
-		li.appendChild(t);
+    taskList.addEventListener('click', function(event){
+    	var action = event.target.getAttribute('data-action');
 
-			if(inputValue === ''){
-				alert('Поле должно быть заполнено');
-			} else {
-				document.getElementById('myUl').appendChild(li);
-			}	 
-		
-		var myNodeList = document.getElementsByTagName('li');
-		var i;
-			for(i = 0; i < myNodeList.length; i++){
-				var span = document.createElement('span');
-				var txt = document.createTextNode('\u00D7');
-				span.className = 'close';
-				span.appendChild(txt);
-				myNodeList[i].appendChild(span);
-			}
+    	if(action === 'remove'){
+    		var task = event.target.closest('LI');
+            taskList.removeChild(task);
+		} else if(action === 'check'){
+            event.target.classList.toggle('checked');
+		}
+	}, false);
 
-		var close = document.getElementsByClassName('close');
-		var i;
-			for(i = 0; i < close.length; i++){
-				close[i].onclick = function(){
-					var div = this.parentElement;
-					div.style.display = 'none';
-				}
-			}
 
-		var list = document.querySelector('ul');
-			list.addEventListener('click', function(ev){
-				if(ev.target.tagName ==='LI') {
-					ev.target.classList.toggle('checked');
-				}
-			}, false)	
-	})
-	
-	
-	
+    createTaskButton.addEventListener('click', function(){
+		var li = document.createElement('li'),
+			inputValue = taskTextInput.value;
+
+        if(inputValue === ''){
+            alert('Поле должно быть заполнено');
+        } else {
+            li.innerText = inputValue;
+            li.setAttribute('data-action', 'check');
+            var span = document.createElement('span');
+			span.innerText = '\u00D7';
+            span.className = 'close';
+            span.setAttribute('data-action', 'remove');
+            li.appendChild(span);
+            taskList.appendChild(li);
+        }
+	});
 })();
