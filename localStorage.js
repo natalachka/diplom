@@ -20,11 +20,11 @@
 				});
 
 			this[key] = value;
-		}
+		};
 
 		this.get = function(key){
-			return localStorage.getItem(buildKey(key));
-		}
+			return JSON.parse(localStorage.getItem(buildKey(key)));
+		};
 
 		function buildKey(key){
 			key = appKey + key;
